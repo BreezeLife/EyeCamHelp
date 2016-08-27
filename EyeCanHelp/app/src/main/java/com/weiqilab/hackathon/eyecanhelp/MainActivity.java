@@ -245,6 +245,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE) {
+
+            btnEyeCanHelp.setText(R.string.end_recording_button);
             sMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);
 
             if (sMediaProjection != null) {
@@ -290,7 +292,6 @@ public class MainActivity extends AppCompatActivity {
     private void startProjection() {
         startActivityForResult(mProjectionManager.createScreenCaptureIntent(), REQUEST_CODE);
         isEyeHelping = true;
-        btnEyeCanHelp.setText(R.string.end_recording_button);
     }
 
     private void stopProjection() {
