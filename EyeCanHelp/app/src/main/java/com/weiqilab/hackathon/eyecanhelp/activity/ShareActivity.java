@@ -3,6 +3,7 @@ package com.weiqilab.hackathon.eyecanhelp.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.PhoneStateListener;
@@ -15,6 +16,8 @@ import android.widget.TextView;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 import com.weiqilab.hackathon.eyecanhelp.R;
+import com.weiqilab.hackathon.eyecanhelp.pojo.Kid;
+import com.weiqilab.hackathon.eyecanhelp.pojo.Report;
 
 import tools.stio.atlas.Dt;
 
@@ -28,7 +31,13 @@ public class ShareActivity extends Activity {
     TextView callButton;
     TextView emailButton;
     TextView shareButton;
+    TextView currentLocation;
+    TextView body;
+    Report report;
+    Bitmap basephoto;
+    Kid kid;
     String telNumber = "4156236129";
+    String email = "enuviel13@gmail.com";
     ImageView kidPhoto;
 
     private ShareLinkContent shareLinkContent;
@@ -37,7 +46,18 @@ public class ShareActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.w(TAG, "onCreate() state: " + Dt.toString(savedInstanceState));
         super.onCreate(savedInstanceState);
+        String kidUUId= getIntent().getExtras().getString("kidUUId");
+        kid= new Kid();
+        kid.setAge("18");
+        kid.setKidName("Biwei Tao");
+        kid.setMissingDate("27 Aug 2016");
+        kid.setLocation("1 Hacker Way, Menlo Park CA 94025");
+        kid.setContactEmail("enuviel13@gmail.com");
+        kid.setContactCallNubmer("4156236129");
+
+
         setContentView(R.layout.share_activity);
+
         PhoneCallListener phoneListener = new PhoneCallListener();
         TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         telephonyManager.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
@@ -75,13 +95,13 @@ public class ShareActivity extends Activity {
         emailIntent.setType("plain/text");
 
         emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-                new String[] { "abc@gmail.com" });
+                new String[] { email });
 
         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-                "Email Subject");
+                "Missing girl "+kid.getKidName()+" was seen at " +currentLocation.toString() );
 
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-                "Email Body");
+                "Missing girl "+kid.getKidName()+" was seen at " +currentLocation.toString() );
 
         startActivity(Intent.createChooser(
                 emailIntent, "Send mail..."));
@@ -92,8 +112,8 @@ public class ShareActivity extends Activity {
 
         if (ShareDialog.canShow(ShareLinkContent.class)) {
             shareLinkContent = new ShareLinkContent.Builder()
-                    .setContentTitle("Your Title")
-                    .setContentDescription("Your Description")
+                    .setContentTitle("Missing girl "+kid.getKidName()+" was seen at " +currentLocation.toString() )
+                    .setContentDescription("Missing girl "+kid.getKidName()+" was seen at " +currentLocation.toString() )
                     .setContentUrl(Uri.parse("http://www.google.com"))
                     .setImageUrl(Uri.parse("http://placehold.it/350x150"))
                     .build();
@@ -109,6 +129,17 @@ public class ShareActivity extends Activity {
         callButton = (TextView) findViewById(R.id.screen_rename_me_now_btn_call);
         emailButton = (TextView) findViewById(R.id.screen_rename_me_now_btn_email);
         shareButton = (TextView) findViewById(R.id.screen_rename_me_now_btn_share);
+        currentLocation=(TextView) findViewById(R.id.screen_rename_me_now_title_text);
+        body=(TextView)findViewById(R.id.screen_rename_me_now_body_text);
+        String textBody=kid.getKidName()+"/n"+kid.getAge()+" years "+"/n"+kid.getMissingDate()
+                +"/n"+kid.getLocation();
+        body.setText(textBody);
+        String textTitle=report.getKidData()+"/n"+report.getLocation_Lat();
+        currentLocation.setText(textTitle);
+        telNumber=kid.getContactCallNubmer();
+        email=kid.getContactEmail();
+
+
 
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,6 +219,7 @@ public class ShareActivity extends Activity {
                 .setContentUrl(Uri.parse("URL[will open website or app]"))
                 .setImageUrl(Uri.parse("image or logo [if playstore or app store url then no need of this image url]"))
                 .build();
+
     }
 
 }

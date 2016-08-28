@@ -13,7 +13,8 @@ public class Report implements Parcelable {
     private String reportId;
     private String currentPhotoUrl;
     private String time;
-    private Location location;
+    private String location_Lat;
+    private String location_Lon;
     private Kid kidData;
     private String kidId;
 
@@ -68,13 +69,19 @@ public class Report implements Parcelable {
     public void setKidId(String kidId) {
         this.kidId = kidId;
     }
-
-    public Location getLocation() {
-        return location;
+    public String getLocation_Lon() {
+        return location_Lon;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setLocation_Lat(String location_lat) {
+        this.location_Lat = location_lat;
+    }
+    public String getLocation_Lat() {
+        return location_Lat;
+    }
+
+    public void setLocation_Lon(String location_lon) {
+        this.location_Lon = location_lon;
     }
 
     public String getReportId() {

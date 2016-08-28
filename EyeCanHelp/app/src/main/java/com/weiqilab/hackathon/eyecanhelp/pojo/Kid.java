@@ -1,8 +1,12 @@
 package com.weiqilab.hackathon.eyecanhelp.pojo;
 
+import android.accessibilityservice.GestureDescription;
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Date;
 
@@ -11,11 +15,11 @@ import java.util.Date;
  * Copyright (c) 2016 Weiqi Zhao. All rights reserved.
  */
 public class Kid implements Parcelable {
-
+    private String kidUUId;
     private String kidName;
-    private int age;
-    private Date missingDate;
-    private Location location;
+    private String age;
+    private String missingDate;
+    private String location;
     private String contactCallNubmer;
     private String contactEmail;
     private String contactFB;
@@ -23,7 +27,54 @@ public class Kid implements Parcelable {
 
     protected Kid(Parcel in) {
     }
+    public  Kid() {
+    }
 
+    public JSONObject toJSON()  {
+        try {
+
+            JSONObject result = new JSONObject();
+            result.put("kidUUId", kidUUId);
+            result.put("name", kidName);
+            result.put("age", age);
+            result.put("missingDate", missingDate.toString());
+            result.put("location", location.toString());
+            result.put("contactCallNubmer", contactCallNubmer);
+            result.put("contactEmail", contactEmail);
+            result.put("contactFB", contactFB);
+            result.put("photoUrl", photoUrl);
+
+            return result;
+
+        } catch (JSONException e) {
+            throw new IllegalStateException("JSON parsing is broken on this device?!");
+        }
+    }
+
+    public Kid fromJSON(String kidJson) {
+        JSONObject json = null;
+        try {
+            json = new JSONObject(kidJson);
+        } catch (JSONException e) {
+            throw new IllegalArgumentException("Expect JSON string", e);
+        }
+        return fromJSON(json);
+    }
+
+    public Kid fromJSON(JSONObject json) {
+        this.kidUUId = json.optString("kidUUId");
+        this.kidName = json.optString("name");
+        this.age= json.optString("age");
+        this.missingDate=json.optString("missingDate");
+        this.location = json.optString("location");
+        this.contactCallNubmer = json.optString("contactCallNubmer");
+        this.contactEmail = json.optString("contactEmail");
+        this.contactFB = json.optString("contactFB");
+        this.photoUrl = json.optString("photoUrl");
+
+
+        return this;
+    }
     public static final Creator<Kid> CREATOR = new Creator<Kid>() {
         @Override
         public Kid createFromParcel(Parcel in) {
@@ -44,12 +95,19 @@ public class Kid implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
     }
+    public String getKidUUId() {
+        return kidUUId;
+    }
 
-    public int getAge() {
+    public void setKidUUId(String kidUUId) {
+        this.kidUUId =kidUUId ;
+    }
+
+    public String getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         this.age = age;
     }
 
@@ -85,19 +143,19 @@ public class Kid implements Parcelable {
         this.kidName = kidName;
     }
 
-    public Location getLocation() {
+    public String getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(String location) {
         this.location = location;
     }
 
-    public Date getMissingDate() {
+    public String getMissingDate() {
         return missingDate;
     }
 
-    public void setMissingDate(Date missingDate) {
+    public void setMissingDate(String missingDate) {
         this.missingDate = missingDate;
     }
 
