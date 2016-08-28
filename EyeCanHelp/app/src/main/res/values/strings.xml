@@ -16,4 +16,6 @@
     <!-- If you have one subscription key, you can add it here to use the service -->
     <string name="subscription_key">72f622e662204be0bc58f9f5ac044a4a</string>
     <string name="face_list_id">missing_kids_test</string>
+    <string name="facebook_app_id">811915815704743</string>
+>>>>>>> master
 </resources>

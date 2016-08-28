@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+
 /**
  * Created by Weiqi Zhao on 3/1/16.
  * Copyright (c) 2016 Weiqi Zhao. All rights reserved.
@@ -30,6 +33,8 @@ public class EyeCanHelpApplication extends Application {
         super.onCreate();
         sInstance = this;
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
     }
 
 
