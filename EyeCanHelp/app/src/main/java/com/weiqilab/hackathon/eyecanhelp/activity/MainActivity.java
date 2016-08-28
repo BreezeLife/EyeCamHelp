@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.microsoft.projectoxford.face.FaceServiceClient;
 import com.microsoft.projectoxford.face.FaceServiceRestClient;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnEyeCanHelp;
     private boolean isEyeHelping;
     private boolean isCameraInUse;
+    private ImageView logoImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         // call for the projection manager
         mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        logoImageView = (ImageView) findViewById(R.id.logo);
 
 //        // start projection
 //        Button startButton = (Button)findViewById(R.id.startButton);
@@ -387,7 +390,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     /**
      * notification
      */
@@ -396,8 +398,8 @@ public class MainActivity extends AppCompatActivity {
         Resources r = getResources();
 
         Notification notification = new NotificationCompat.Builder(this)
-                .setTicker("kidUUID:" + kidUUID)
-                .setContentTitle(r.getString(R.string.notification_title))
+                .setTicker(r.getString(R.string.notification_title))
+                .setContentTitle(kidUUID.toString())
                 .setContentText(r.getString(R.string.notification_text))
                 .setContentIntent(pi)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
@@ -408,7 +410,6 @@ public class MainActivity extends AppCompatActivity {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(0, notification);
     }
-
 
     /**
      * Utility functions for dectecting and finding similar faces

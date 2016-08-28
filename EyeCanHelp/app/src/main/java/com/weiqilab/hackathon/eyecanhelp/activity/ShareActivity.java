@@ -9,6 +9,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.share.model.ShareLinkContent;
@@ -28,6 +29,7 @@ public class ShareActivity extends Activity {
     TextView emailButton;
     TextView shareButton;
     String telNumber = "4156236129";
+    ImageView kidPhoto;
 
     private ShareLinkContent shareLinkContent;
     private ShareDialog shareDialog;
@@ -40,7 +42,7 @@ public class ShareActivity extends Activity {
         TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         telephonyManager.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
 
-
+        kidPhoto = (ImageView)findViewById(R.id.screen_rename_me_now_body_img);
         initOnCreate();
     }
 
