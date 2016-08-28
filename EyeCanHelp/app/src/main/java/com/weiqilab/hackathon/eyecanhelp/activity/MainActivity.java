@@ -20,8 +20,8 @@ import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -380,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
      * notification
      */
     public void showNotification() {
-        PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent(this, ResultActivity.class), 0);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent(this, ShareActivity.class), 0);
         Resources r = getResources();
 
         Notification notification = new NotificationCompat.Builder(this)

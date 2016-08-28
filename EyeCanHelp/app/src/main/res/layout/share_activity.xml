@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"  xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="12dp"
+    android:background="#e8e8e8"
+    >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@drawable/img_bkg_border_e0"
+            >
+
+            <ImageView
+                android:id="@+id/screen_rename_me_now_title_img"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_margin="20dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:background="@drawable/img_bkg_border_e0"
+                />
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                >
+                <TextView
+                    android:id="@+id/screen_rename_me_now_title_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="28sp"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Time\nCocaine"
+                    android:textColor="#333333"
+
+                    />
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="12dp"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/img_bkg_border_e0"
+            >
+
+            <ImageView
+                android:id="@+id/screen_rename_me_now_body_img"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/img_bkg_border_e0"
+                />
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+
+                android:layout_height="match_parent"
+                >
+                <TextView
+                    android:id="@+id/screen_rename_me_now_body_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="18sp"
+                    android:textColor="#555555"
+                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse fermentum eget mi a vulputate. Nunc bibendum porta nibh et facilisis. Praesent tincidunt, mauris sed sodales eleifend, odio lacus tempor ipsum, at scelerisque ante massa sed nisi. Phasellus auctor, ipsum a sagittis fermentum, magna nisi consequat lectus, et suscipit velit libero"
+
+                    />
+            </FrameLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            >
+
+            <TextView
+                android:id="@+id/screen_rename_me_now_btn_call"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:background="@drawable/img_bkg_btn_e0"
+                android:clickable="true"
+                android:textColor="#555555"
+                android:text="CALL"
+                />
+
+            <TextView
+                android:id="@+id/screen_rename_me_now_btn_email"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:gravity="center"
+                android:background="@drawable/img_bkg_btn_e0"
+                android:clickable="true"
+                android:textColor="#555555"
+                android:text="E-MAIL"
+                />
+
+            <TextView
+                android:id="@+id/screen_rename_me_now_btn_share"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:gravity="center"
+                android:background="@drawable/img_bkg_btn_e0"
+                android:clickable="true"
+                android:textColor="#555555"
+                android:text="SHARE"
+                />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</FrameLayout>
