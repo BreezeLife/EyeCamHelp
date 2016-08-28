@@ -461,9 +461,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Face[] result) {
             if (result != null) {
-                // Only return 1 face detected
-                UUID faceDetected = result[0].faceId;
-                new FindSimilarFaceTask().execute(faceDetected);
+                for (Face face: result) {
+                    new FindSimilarFaceTask().execute(face.faceId);
+                }
 
             }
 
