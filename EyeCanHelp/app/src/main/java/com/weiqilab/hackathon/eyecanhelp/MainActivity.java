@@ -320,4 +320,9 @@ public class MainActivity extends AppCompatActivity {
         mVirtualDisplay = sMediaProjection.createVirtualDisplay(SCREENCAP_NAME, mWidth, mHeight, mDensity, VIRTUAL_DISPLAY_FLAGS, mImageReader.getSurface(), null, mHandler);
         mImageReader.setOnImageAvailableListener(new ImageAvailableListener(), mHandler);
     }
+
+
+    private boolean isCameraInUse(){
+
+    }
 }
