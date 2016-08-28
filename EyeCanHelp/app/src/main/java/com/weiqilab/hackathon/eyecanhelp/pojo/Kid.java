@@ -27,6 +27,8 @@ public class Kid implements Parcelable {
 
     protected Kid(Parcel in) {
     }
+    public  Kid() {
+    }
 
     public JSONObject toJSON()  {
         try {
