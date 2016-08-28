@@ -1,8 +1,13 @@
 package com.weiqilab.hackathon.eyecanhelp;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.hardware.camera2.CameraManager;
@@ -15,6 +20,7 @@ import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -108,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!isEyeHelping) {
-                    startProjectionTask();
+                    startProjection();
                 } else {
                     stopProjection();
                 }
@@ -121,9 +127,16 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 Looper.prepare();
                 mHandler = new Handler();
+                try {
+                    sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 Looper.loop();
             }
         }.start();
+
+        showNotification();
     }
 
     @Override
@@ -155,49 +168,49 @@ public class MainActivity extends AppCompatActivity {
             Image image = null;
             FileOutputStream fos = null;
             Bitmap bitmap = null;
+                Log.d(TAG, "camera: " + checkCameraOn());
+                try {
+                    image = mImageReader.acquireLatestImage();
+                    if (image != null) {
+                        Image.Plane[] planes = image.getPlanes();
+                        ByteBuffer buffer = planes[0].getBuffer();
+                        int pixelStride = planes[0].getPixelStride();
+                        int rowStride = planes[0].getRowStride();
+                        int rowPadding = rowStride - pixelStride * mWidth;
 
-            try {
-                image = mImageReader.acquireLatestImage();
-                if (image != null) {
-                    Image.Plane[] planes = image.getPlanes();
-                    ByteBuffer buffer = planes[0].getBuffer();
-                    int pixelStride = planes[0].getPixelStride();
-                    int rowStride = planes[0].getRowStride();
-                    int rowPadding = rowStride - pixelStride * mWidth;
+                        // create bitmap
+                        bitmap = Bitmap.createBitmap(mWidth + rowPadding / pixelStride, mHeight, Bitmap.Config.ARGB_8888);
+                        bitmap.copyPixelsFromBuffer(buffer);
 
-                    // create bitmap
-                    bitmap = Bitmap.createBitmap(mWidth + rowPadding / pixelStride, mHeight, Bitmap.Config.ARGB_8888);
-                    bitmap.copyPixelsFromBuffer(buffer);
+                        // write bitmap to a file
+                        fos = new FileOutputStream(STORE_DIRECTORY + "/myscreen_" + IMAGES_PRODUCED + ".png");
+                        Log.d(TAG, "Screenshot saved:" + STORE_DIRECTORY + "/myscreen_" + IMAGES_PRODUCED + ".png");
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
 
-                    // write bitmap to a file
-                    fos = new FileOutputStream(STORE_DIRECTORY + "/myscreen_" + IMAGES_PRODUCED + ".png");
-                    Log.d(TAG, "Screenshot saved:" + STORE_DIRECTORY + "/myscreen_" + IMAGES_PRODUCED + ".png");
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                        IMAGES_PRODUCED++;
+                        Log.e(TAG, "captured image: " + IMAGES_PRODUCED);
+                    }
 
-                    IMAGES_PRODUCED++;
-                    Log.e(TAG, "captured image: " + IMAGES_PRODUCED);
-                }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (fos!=null) {
+                        try {
+                            fos.close();
+                        } catch (IOException ioe) {
+                            ioe.printStackTrace();
+                        }
+                    }
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (fos!=null) {
-                    try {
-                        fos.close();
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
+                    if (bitmap!=null) {
+                        bitmap.recycle();
+                    }
+
+                    if (image!=null) {
+                        image.close();
                     }
                 }
-
-                if (bitmap!=null) {
-                    bitmap.recycle();
-                }
-
-                if (image!=null) {
-                    image.close();
-                }
             }
-        }
     }
 
     private class OrientationChangeCallback extends OrientationEventListener {
@@ -230,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onStop() {
             Log.e("ScreenCapture", "stopping projection.");
-            mHandler.postDelayed(new Runnable() {
+            mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if(mVirtualDisplay != null) mVirtualDisplay.release();
@@ -238,54 +251,55 @@ public class MainActivity extends AppCompatActivity {
                     if(mOrientationChangeCallback != null) mOrientationChangeCallback.disable();
                     sMediaProjection.unregisterCallback(MediaProjectionStopCallback.this);
                 }
-            }, 5000);
+            });
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE) {
-            btnEyeCanHelp.setText(R.string.end_recording_button);
-            sMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);
+            if (requestCode == REQUEST_CODE) {
+                btnEyeCanHelp.setText(R.string.end_recording_button);
+                sMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);
 
-            if (sMediaProjection != null) {
+                if (sMediaProjection != null) {
 
-                // create file storage directory
-                File externalFilesDir = getExternalFilesDir(null);
-                if (externalFilesDir != null) {
-                    STORE_DIRECTORY = externalFilesDir.getAbsolutePath() + "/screenshots/";
-                    File storeDirectory = new File(STORE_DIRECTORY);
-                    if (!storeDirectory.exists()) {
-                        boolean success = storeDirectory.mkdirs();
-                        if (!success) {
-                            Log.e(TAG, "failed to create file storage directory.");
-                            return;
+                    // create file storage directory
+                    File externalFilesDir = getExternalFilesDir(null);
+                    if (externalFilesDir != null) {
+                        STORE_DIRECTORY = externalFilesDir.getAbsolutePath() + "/screenshots/";
+                        File storeDirectory = new File(STORE_DIRECTORY);
+                        if (!storeDirectory.exists()) {
+                            boolean success = storeDirectory.mkdirs();
+                            if (!success) {
+                                Log.e(TAG, "failed to create file storage directory.");
+                                return;
+                            }
                         }
+                    } else {
+                        Log.e(TAG, "failed to create file storage directory, getExternalFilesDir is null.");
+                        return;
                     }
-                } else {
-                    Log.e(TAG, "failed to create file storage directory, getExternalFilesDir is null.");
-                    return;
+
+                    // display metrics
+                    DisplayMetrics metrics = getResources().getDisplayMetrics();
+                    mDensity = metrics.densityDpi;
+                    mDisplay = getWindowManager().getDefaultDisplay();
+
+                    // create virtual display depending on device width / height
+                    createVirtualDisplay();
+
+                    // register orientation change callback
+                    mOrientationChangeCallback = new OrientationChangeCallback(this);
+                    if (mOrientationChangeCallback.canDetectOrientation()) {
+                        mOrientationChangeCallback.enable();
+                    }
+
+                    // register media projection stop callback
+                    sMediaProjection.registerCallback(new MediaProjectionStopCallback(), mHandler);
                 }
-
-                // display metrics
-                DisplayMetrics metrics = getResources().getDisplayMetrics();
-                mDensity = metrics.densityDpi;
-                mDisplay = getWindowManager().getDefaultDisplay();
-
-                // create virtual display depending on device width / height
-                createVirtualDisplay();
-
-                // register orientation change callback
-                mOrientationChangeCallback = new OrientationChangeCallback(this);
-                if (mOrientationChangeCallback.canDetectOrientation()) {
-                    mOrientationChangeCallback.enable();
-                }
-
-                // register media projection stop callback
-                sMediaProjection.registerCallback(new MediaProjectionStopCallback(), mHandler);
             }
-        }
     }
+
 
     /****************************************** UI Widget Callbacks *******************************/
     private void startProjection() {
@@ -359,4 +373,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * notification
+     */
+    public void showNotification() {
+        PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
+        Resources r = getResources();
+
+        Notification notification = new NotificationCompat.Builder(this)
+                .setTicker(r.getString(R.string.notification_title))
+                .setContentTitle(r.getString(R.string.notification_title))
+                .setContentText(r.getString(R.string.notification_text))
+                .setContentIntent(pi)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setSmallIcon(android.R.drawable.sym_action_chat)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setAutoCancel(true)
+                .build();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(0, notification);
+    }
+
 }
