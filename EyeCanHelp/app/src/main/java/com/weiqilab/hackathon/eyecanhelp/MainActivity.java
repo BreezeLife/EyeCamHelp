@@ -11,6 +11,7 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -106,7 +107,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!isEyeHelping) {
-                    startProjection();
+                 //  startProjection();
+                    phonecall();
                 } else {
                     stopProjection();
                 }
@@ -125,7 +127,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+    String telNumber="4156236129";
 
+    public     void phonecall(){
+        Intent intent = new Intent(this, ShareActivity.class);
+        startActivity(intent);
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
