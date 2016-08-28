@@ -378,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
      * notification
      */
     public void showNotification() {
-        PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent(this, ResultActivity.class), 0);
         Resources r = getResources();
 
         Notification notification = new NotificationCompat.Builder(this)
