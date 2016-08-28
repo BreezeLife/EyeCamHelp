@@ -148,11 +148,6 @@ public class MainActivity extends AppCompatActivity {
                 Looper.loop();
             }
         }.start();
-
-        showNotification();
-
-
-
     }
 
     @Override
@@ -202,6 +197,8 @@ public class MainActivity extends AppCompatActivity {
                         fos = new FileOutputStream(STORE_DIRECTORY + "/myscreen_" + IMAGES_PRODUCED + ".png");
                         Log.d(TAG, "Screenshot saved:" + STORE_DIRECTORY + "/myscreen_" + IMAGES_PRODUCED + ".png");
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+
+                        detectAndFindSimilarFaces(bitmap);
 
                         IMAGES_PRODUCED++;
                         Log.e(TAG, "captured image: " + IMAGES_PRODUCED);
@@ -390,15 +387,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     /**
      * notification
      */
-    public void showNotification() {
+    public void showNotification(UUID kidUUID) {
         PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent(this, ShareActivity.class), 0);
         Resources r = getResources();
 
         Notification notification = new NotificationCompat.Builder(this)
-                .setTicker(r.getString(R.string.notification_title))
+                .setTicker("kidUUID:" + kidUUID)
                 .setContentTitle(r.getString(R.string.notification_title))
                 .setContentText(r.getString(R.string.notification_text))
                 .setContentIntent(pi)
@@ -425,6 +423,7 @@ public class MainActivity extends AppCompatActivity {
     // main function for detection and finding similar faces
     private void detectAndFindSimilarFaces(final Bitmap imageBitmap)
     {
+        Log.d("DETECT", "dected starts....");
         faceServiceClient =
                 new FaceServiceRestClient(getString(R.string.subscription_key));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -440,6 +439,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Face[] doInBackground(InputStream... params) {
             try {
+                Log.d("DETECT", "detecting...");
                 publishProgress("Detecting...");
                 Face[] result = faceServiceClient.detect(
                         params[0],
@@ -463,16 +463,17 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(Face[] result) {
-            if (result != null) {
+            Log.d("DETECT", "detection get result....");
+            if (result != null && result.length > 0) {
                 // Only return 1 face detected
                 UUID faceDetected = result[0].faceId;
                 new FindSimilarFaceTask().execute(faceDetected);
-
             }
 
         }
 
     }
+
     // Background task for finding similar faces.
     private class FindSimilarFaceTask extends AsyncTask<UUID, String, SimilarPersistedFace[]> {
 
@@ -503,13 +504,14 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(SimilarPersistedFace[] result) {
-            if (result != null) {
+            if (result != null && result.length > 0) {
                 similarFacesDetected = new ArrayList<>();
                 for (SimilarPersistedFace face : result) {
                     similarFacesDetected.add(face.persistedFaceId);
                 }
-            }
 
+                showNotification(similarFacesDetected.get(0));
+            }
         }
     }
 }
