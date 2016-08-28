@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
-import android.hardware.Camera;
+import android.hardware.camera2.CameraManager;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.Image;
@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button btnEyeCanHelp;
     private boolean isEyeHelping;
+    private boolean isCameraInUse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -319,25 +320,36 @@ public class MainActivity extends AppCompatActivity {
         mImageReader.setOnImageAvailableListener(new ImageAvailableListener(), mHandler);
     }
 
-    public boolean isCameraInUse() {
-        Camera c = null;
-        try {
-            c = Camera.open();
-        } catch (RuntimeException e) {
-            return true;
-        } finally {
-            if (c != null) c.release();
-        }
-        return false;
-    }
+    private boolean checkCameraOn() {
+        // within constructor
+        // Figure out if Camera is Available or Not
+        CameraManager cam_manager = (CameraManager) getBaseContext().getSystemService(Context.CAMERA_SERVICE);
 
+        CameraManager.AvailabilityCallback camAvailCallback = new CameraManager.AvailabilityCallback() {
+            public void onCameraAvailable(String cameraId) {
+
+                isCameraInUse=false;
+                Log.d(TAG, "notified that camera is not in use.");
+
+            }
+
+            public void onCameraUnavailable(String cameraId) {
+
+                isCameraInUse=true;
+                Log.d(TAG, "notified that camera is in use.");
+
+            }
+        };
+        cam_manager.registerAvailabilityCallback(camAvailCallback, mHandler);
+        return isCameraInUse;
+    }
 
 
     private void startProjectionTask() {
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (isCameraInUse()) {
+                if (checkCameraOn()) {
                     startProjection();
                     isEyeHelping = true;
                 } else {
