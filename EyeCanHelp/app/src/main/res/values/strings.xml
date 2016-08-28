@@ -10,4 +10,6 @@
 
     <string name="notification_title">EyeCamHelp</string>
     <string name="notification_text">You cam matches a missing girl! Help her!</string>
+
+    <string name="facebook_app_id">811915815704743</string>
 </resources>

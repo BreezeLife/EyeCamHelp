@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.weiqilab.hackathon.eyecanhelp.R;
 
 import tools.stio.atlas.Dt;
@@ -27,6 +29,9 @@ public class ShareActivity extends Activity {
     TextView shareButton;
     String telNumber = "4156236129";
 
+    private ShareLinkContent shareLinkContent;
+    private ShareDialog shareDialog;
+
     protected void onCreate(Bundle savedInstanceState) {
         Log.w(TAG, "onCreate() state: " + Dt.toString(savedInstanceState));
         super.onCreate(savedInstanceState);
@@ -34,6 +39,7 @@ public class ShareActivity extends Activity {
         PhoneCallListener phoneListener = new PhoneCallListener();
         TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         telephonyManager.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
+
 
         initOnCreate();
     }
@@ -82,6 +88,18 @@ public class ShareActivity extends Activity {
 
     public void shareFacebook() {
 
+        if (ShareDialog.canShow(ShareLinkContent.class)) {
+            shareLinkContent = new ShareLinkContent.Builder()
+                    .setContentTitle("Your Title")
+                    .setContentDescription("Your Description")
+                    .setContentUrl(Uri.parse("http://www.google.com"))
+                    .setImageUrl(Uri.parse("http://placehold.it/350x150"))
+                    .build();
+            shareDialog.show(shareLinkContent);
+        }
+//
+//        genSharedPostOnFacebook();
+//        ShareDialog.show(ShareActivity.this, shareLinkContent);
     }
 
 
@@ -111,6 +129,8 @@ public class ShareActivity extends Activity {
             }
 
         });
+
+        shareDialog = new ShareDialog(this);
     }
 
     //monitor phone call activities
@@ -158,5 +178,14 @@ public class ShareActivity extends Activity {
         }
     }
 
+    // updated by Weiqi Zhao
+    private void genSharedPostOnFacebook () {
+         shareLinkContent = new ShareLinkContent.Builder()
+                .setContentTitle("Your Title")
+                .setContentDescription("Your Description")
+                .setContentUrl(Uri.parse("URL[will open website or app]"))
+                .setImageUrl(Uri.parse("image or logo [if playstore or app store url then no need of this image url]"))
+                .build();
+    }
 
 }

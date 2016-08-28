@@ -139,6 +139,9 @@ public class MainActivity extends AppCompatActivity {
         }.start();
 
         showNotification();
+
+
+
     }
 
     @Override
