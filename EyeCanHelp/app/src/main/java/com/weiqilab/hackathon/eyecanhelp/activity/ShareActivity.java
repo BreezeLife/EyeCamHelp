@@ -75,7 +75,7 @@ public class ShareActivity extends Activity {
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
                 "Email Body");
 
-        startActivity(Intent.createChooser(
+        startActivity(Intent.crggieateChooser(
                 emailIntent, "Send mail..."));
 
     }
