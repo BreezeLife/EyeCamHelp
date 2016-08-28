@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.microsoft.projectoxford.face.FaceServiceClient;
 import com.microsoft.projectoxford.face.FaceServiceRestClient;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnEyeCanHelp;
     private boolean isEyeHelping;
     private boolean isCameraInUse;
+    private ImageView logoImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         // call for the projection manager
         mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        logoImageView = (ImageView) findViewById(R.id.logo);
 
 //        // start projection
 //        Button startButton = (Button)findViewById(R.id.startButton);
@@ -148,11 +151,6 @@ public class MainActivity extends AppCompatActivity {
                 Looper.loop();
             }
         }.start();
-
-        showNotification();
-
-
-
     }
 
     @Override
@@ -202,6 +200,8 @@ public class MainActivity extends AppCompatActivity {
                         fos = new FileOutputStream(STORE_DIRECTORY + "/myscreen_" + IMAGES_PRODUCED + ".png");
                         Log.d(TAG, "Screenshot saved:" + STORE_DIRECTORY + "/myscreen_" + IMAGES_PRODUCED + ".png");
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+
+                        detectAndFindSimilarFaces(bitmap);
 
                         IMAGES_PRODUCED++;
                         Log.e(TAG, "captured image: " + IMAGES_PRODUCED);
@@ -393,13 +393,13 @@ public class MainActivity extends AppCompatActivity {
     /**
      * notification
      */
-    public void showNotification() {
+    public void showNotification(UUID kidUUID) {
         PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent(this, ShareActivity.class), 0);
         Resources r = getResources();
 
         Notification notification = new NotificationCompat.Builder(this)
                 .setTicker(r.getString(R.string.notification_title))
-                .setContentTitle(r.getString(R.string.notification_title))
+                .setContentTitle(kidUUID.toString())
                 .setContentText(r.getString(R.string.notification_text))
                 .setContentIntent(pi)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
@@ -410,7 +410,6 @@ public class MainActivity extends AppCompatActivity {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(0, notification);
     }
-
 
     /**
      * Utility functions for dectecting and finding similar faces
@@ -425,6 +424,7 @@ public class MainActivity extends AppCompatActivity {
     // main function for detection and finding similar faces
     private void detectAndFindSimilarFaces(final Bitmap imageBitmap)
     {
+        Log.d("DETECT", "dected starts....");
         faceServiceClient =
                 new FaceServiceRestClient(getString(R.string.subscription_key));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -440,6 +440,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Face[] doInBackground(InputStream... params) {
             try {
+                Log.d("DETECT", "detecting...");
                 publishProgress("Detecting...");
                 Face[] result = faceServiceClient.detect(
                         params[0],
@@ -463,16 +464,17 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(Face[] result) {
-            if (result != null) {
+            Log.d("DETECT", "detection get result....");
+            if (result != null && result.length > 0) {
                 // Only return 1 face detected
                 UUID faceDetected = result[0].faceId;
                 new FindSimilarFaceTask().execute(faceDetected);
-
             }
 
         }
 
     }
+
     // Background task for finding similar faces.
     private class FindSimilarFaceTask extends AsyncTask<UUID, String, SimilarPersistedFace[]> {
 
@@ -503,13 +505,14 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(SimilarPersistedFace[] result) {
-            if (result != null) {
+            if (result != null && result.length > 0) {
                 similarFacesDetected = new ArrayList<>();
                 for (SimilarPersistedFace face : result) {
                     similarFacesDetected.add(face.persistedFaceId);
                 }
-            }
 
+                showNotification(similarFacesDetected.get(0));
+            }
         }
     }
 }

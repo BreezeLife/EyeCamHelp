@@ -12,7 +12,7 @@
     tools:context=".activity.MainActivity"
     tools:showIn="@layout/activity_main"
     android:orientation="vertical"
-    android:background="#070707">
+    android:background="#6699ff">
 
     <!--<LinearLayout-->
         <!--android:layout_width="match_parent"-->
@@ -30,7 +30,13 @@
             <!--android:layout_height="wrap_content"-->
             <!--android:text="@string/stop_recording" />-->
     <!--</LinearLayout>-->
-
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/eyecamhelp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="30dp"/>
 
         <Button
             android:id="@+id/eyecanhelpButton"
