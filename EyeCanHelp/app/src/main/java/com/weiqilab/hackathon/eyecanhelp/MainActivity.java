@@ -5,13 +5,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.hardware.Camera;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,8 +30,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
-import tools.stio.atlas.Dt;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.w(TAG, "onCreate() state: " + Dt.toString(savedInstanceState));
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -110,8 +107,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!isEyeHelping) {
-                   startProjection();
-                  //  startSharingActivity();
+                    startProjectionTask();
                 } else {
                     stopProjection();
                 }
@@ -127,14 +123,8 @@ public class MainActivity extends AppCompatActivity {
                 Looper.loop();
             }
         }.start();
-
-
     }
 
-    public void startSharingActivity(){
-        Intent intent = new Intent(this, ShareActivity.class);
-        startActivity(intent);
-    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -254,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE) {
-
             btnEyeCanHelp.setText(R.string.end_recording_button);
             sMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);
 
@@ -328,5 +317,34 @@ public class MainActivity extends AppCompatActivity {
         mImageReader = ImageReader.newInstance(mWidth, mHeight, PixelFormat.RGBA_8888, 2);
         mVirtualDisplay = sMediaProjection.createVirtualDisplay(SCREENCAP_NAME, mWidth, mHeight, mDensity, VIRTUAL_DISPLAY_FLAGS, mImageReader.getSurface(), null, mHandler);
         mImageReader.setOnImageAvailableListener(new ImageAvailableListener(), mHandler);
+    }
+
+    public boolean isCameraInUse() {
+        Camera c = null;
+        try {
+            c = Camera.open();
+        } catch (RuntimeException e) {
+            return true;
+        } finally {
+            if (c != null) c.release();
+        }
+        return false;
+    }
+
+
+
+    private void startProjectionTask() {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isCameraInUse()) {
+                    startProjection();
+                    isEyeHelping = true;
+                } else {
+                    stopProjection();
+                    isEyeHelping = false;
+                }
+            }
+        });
     }
 }
