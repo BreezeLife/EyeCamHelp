@@ -1,7 +1,9 @@
-package com.weiqilab.hackathon.eyecanhelp;
+package com.weiqilab.hackathon.eyecanhelp.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.weiqilab.hackathon.eyecanhelp.R;
 
 public class ResultActivity extends AppCompatActivity {
 

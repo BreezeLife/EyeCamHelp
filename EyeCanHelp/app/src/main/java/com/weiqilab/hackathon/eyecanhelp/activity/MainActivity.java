@@ -1,4 +1,4 @@
-package com.weiqilab.hackathon.eyecanhelp;
+package com.weiqilab.hackathon.eyecanhelp.activity;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -31,6 +31,8 @@ import android.view.MenuItem;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.Button;
+
+import com.weiqilab.hackathon.eyecanhelp.R;
 
 import java.io.File;
 import java.io.FileOutputStream;
