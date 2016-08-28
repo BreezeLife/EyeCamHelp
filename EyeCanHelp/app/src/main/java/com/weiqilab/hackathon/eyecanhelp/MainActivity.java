@@ -31,6 +31,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import tools.stio.atlas.Dt;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getName();
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.w(TAG, "onCreate() state: " + Dt.toString(savedInstanceState));
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -107,8 +110,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!isEyeHelping) {
-                 //  startProjection();
-                    phonecall();
+                   startProjection();
+                  //  startSharingActivity();
                 } else {
                     stopProjection();
                 }
@@ -127,9 +130,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    String telNumber="4156236129";
 
-    public     void phonecall(){
+    public void startSharingActivity(){
         Intent intent = new Intent(this, ShareActivity.class);
         startActivity(intent);
     }

@@ -4,29 +4,29 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-
 import android.os.Bundle;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
-
 import android.widget.TextView;
-import android.widget.Toast;
 
-
+import tools.stio.atlas.Dt;
 
 
 /**
  * Created by Enuviel on 8/27/16.
  */
 public class ShareActivity extends Activity {
+    private static final String TAG = ShareActivity.class.getSimpleName();
+
     TextView callButton;
     TextView emailButton;
     TextView shareButton;
     String telNumber = "4156236129";
 
     protected void onCreate(Bundle savedInstanceState) {
+        Log.w(TAG, "onCreate() state: " + Dt.toString(savedInstanceState));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.share_activity);
         PhoneCallListener phoneListener = new PhoneCallListener();
@@ -36,11 +36,23 @@ public class ShareActivity extends Activity {
         initOnCreate();
     }
 
+    @Override
+    public void finish() {
+        Log.w(TAG, "finish() called from: " + Dt.printStackTrace());
+        super.finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.w(TAG, "onActivityResult() requestCode: " + requestCode + ", resultCode: " + resultCode + ", intent: " + Dt.toString(data.getExtras()));
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     public void phonecall() {
         String uri = "tel:" + telNumber;
         Intent dialIntent = new Intent(Intent.ACTION_CALL, Uri.parse(uri));
         try {
-            startActivityForResult(dialIntent,0);
+            startActivity(dialIntent);
         } catch (Exception e) {
 
         }
