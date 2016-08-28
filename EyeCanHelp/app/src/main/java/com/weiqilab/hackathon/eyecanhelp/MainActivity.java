@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.hardware.Camera;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.Image;
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!isEyeHelping) {
-                    startProjection();
+                    startProjectionTask();
                 } else {
                     stopProjection();
                 }
@@ -122,8 +123,6 @@ public class MainActivity extends AppCompatActivity {
                 Looper.loop();
             }
         }.start();
-
-
     }
 
     @Override
@@ -245,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE) {
-
             btnEyeCanHelp.setText(R.string.end_recording_button);
             sMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);
 
@@ -321,8 +319,32 @@ public class MainActivity extends AppCompatActivity {
         mImageReader.setOnImageAvailableListener(new ImageAvailableListener(), mHandler);
     }
 
+    public boolean isCameraInUse() {
+        Camera c = null;
+        try {
+            c = Camera.open();
+        } catch (RuntimeException e) {
+            return true;
+        } finally {
+            if (c != null) c.release();
+        }
+        return false;
+    }
 
-    private boolean isCameraInUse(){
 
+
+    private void startProjectionTask() {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isCameraInUse()) {
+                    startProjection();
+                    isEyeHelping = true;
+                } else {
+                    stopProjection();
+                    isEyeHelping = false;
+                }
+            }
+        });
     }
 }
