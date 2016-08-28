@@ -86,7 +86,6 @@ public class ServiceFaceDetection extends Service {
     }
     // Background task for finding similar faces.
     private class FindSimilarFaceTask extends AsyncTask<UUID, String, SimilarPersistedFace[]> {
-        private boolean mSucceed = true;
         @Override
         protected SimilarPersistedFace[] doInBackground(UUID... params) {
             // Get an instance of face service client to detect faces in image.
@@ -114,7 +113,7 @@ public class ServiceFaceDetection extends Service {
         }
         @Override
         protected void onPostExecute(SimilarPersistedFace[] result) {
-            if (mSucceed) {
+            if (result != null) {
                 List<UUID> similarFacesDetected = new ArrayList<>();
                 for (SimilarPersistedFace face: result) {
                     similarFacesDetected.add(face.persistedFaceId);
